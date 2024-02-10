@@ -6,13 +6,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-root',
+  selector: 'core-frame-header-only',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, serverSDKApiModule, HttpClientModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  templateUrl: './header-only.component.html',
+  styleUrl: './header-only.component.css'
 })
-export class AppComponent {
+export class CoreFrameHeaderOnlyComponent {
   title = 'dappui';
   nav = APP_MENU_ITEMS
 
