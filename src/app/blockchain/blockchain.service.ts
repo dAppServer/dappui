@@ -40,7 +40,7 @@ export class BlockchainService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          path: 'apps/blockchain/lthn',
+          path: 'apps/blockchain/lthn/bin',
         }),
       })
 
