@@ -66,7 +66,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'blockchain',
     pathMatch: 'full',
   }
 ];
