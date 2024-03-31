@@ -4,7 +4,7 @@ import {DecimalPipe, NgForOf, NgIf} from "@angular/common";
 import {BlockchainService} from "./blockchain.service";
 import {ChainGetInfo} from "./interfaces/props/get_info";
 import {BlockHeader} from "./interfaces/types/blockHeader";
-import {interval} from "rxjs";
+import {interval,isObservable} from "rxjs";
 
 
 @Component({
@@ -27,24 +27,19 @@ export class BlockchainComponent implements OnInit, AfterViewInit, OnDestroy {
   chainInfo!: ChainGetInfo;
   blocks!: BlockHeader[];
 
-  blockSub: any;
+  blockSub: any = undefined
 
   constructor(private chain: BlockchainService) {
   }
 
   ngOnDestroy(): void {
-    try {
-      this.blockSub.unsubscribe();
-    } catch (e) {
-      console.log(e)
-    }
-
+       this.blockSub.unsubscribe()
   }
 
   ngAfterViewInit(): void {
-    this.blockSub = interval(10000);
+    const blockInt = interval(10000);
 
-    this.blockSub.subscribe(async () => {
+    this.blockSub = blockInt.subscribe(async () => {
       await this.getChainInfo()
       await this.getBlocks()
     })
