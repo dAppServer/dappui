@@ -1,9 +1,10 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {RouterLink} from "@angular/router";
 import {DecimalPipe, NgForOf, NgIf} from "@angular/common";
 import {BlockchainService} from "./blockchain.service";
 import {ChainGetInfo} from "./interfaces/props/get_info";
 import {BlockHeader} from "./interfaces/types/blockHeader";
+import {interval} from "rxjs";
 
 
 @Component({
@@ -19,19 +20,35 @@ import {BlockHeader} from "./interfaces/types/blockHeader";
   templateUrl: './blockchain.component.html',
   styleUrl: './blockchain.component.scss'
 })
-export class BlockchainComponent implements OnInit, AfterViewInit {
+export class BlockchainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   installed: boolean = false;
 
   chainInfo!: ChainGetInfo;
   blocks!: BlockHeader[];
 
-  constructor(private chain: BlockchainService){
+  blockSub: any;
+
+  constructor(private chain: BlockchainService) {
+  }
+
+  ngOnDestroy(): void {
+    try {
+      this.blockSub.unsubscribe();
+    } catch (e) {
+      console.log(e)
+    }
+
   }
 
   ngAfterViewInit(): void {
-        //this.getBlocks()
-    }
+    this.blockSub = interval(10000);
+
+    this.blockSub.subscribe(async () => {
+      await this.getChainInfo()
+      await this.getBlocks()
+    })
+  }
 
   ngOnInit(): void {
     this.chain.daemonInstalled().then(async (res) => {
@@ -55,14 +72,14 @@ export class BlockchainComponent implements OnInit, AfterViewInit {
   }
 
   async getBlocks() {
-    if(this.chain.isRunning()) {
-      const blocks = await this.chain.getBlocks(this.chainInfo.height-25, this.chainInfo.height-1)
+    if (this.chain.isRunning()) {
+      const blocks = await this.chain.getBlocks(this.chainInfo.height - 25, this.chainInfo.height - 1)
       blocks['headers'] = blocks['headers'].reverse()
       // @ts-ignore
-      if(this.blocks === undefined || blocks['headers'][0]['hash'] !== this.blocks['headers'][0]['hash']){
-			this.blocks = blocks['headers']
+      if (this.blocks === undefined || blocks['headers'][0]['hash'] !== this.blocks['headers'][0]['hash']) {
+        this.blocks = blocks['headers']
         console.log(this.blocks)
-		}
+      }
     }
   }
 }
