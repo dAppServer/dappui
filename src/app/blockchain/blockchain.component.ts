@@ -68,9 +68,6 @@ export class BlockchainComponent implements OnInit, AfterViewInit, OnDestroy {
 
       await this.getChainInfo();
       await this.getBlocks();
-      console.log(this.chainInfo)
-      console.log('Daemon installed');
-
     })
   }
 
@@ -78,7 +75,6 @@ export class BlockchainComponent implements OnInit, AfterViewInit, OnDestroy {
     if(this.downloadStats.total > 0){ return true }
     this.downloadProgress()
     await this.chain.installDaemon();
-    console.log('Daemon installed');
     return true;
 
   }
@@ -91,7 +87,6 @@ export class BlockchainComponent implements OnInit, AfterViewInit, OnDestroy {
         that.downloadStats.percent = Math.floor((that.downloadStats.total / that.downloadStats.size) * 100)
         if(this.downloadStats.total == this.downloadStats.size){
           subject.unsubscribe();
-          console.log('Download complete')
           setTimeout(() => {
             that.router.navigate(['/','blockchain'])
           }, 1000);
@@ -116,9 +111,8 @@ export class BlockchainComponent implements OnInit, AfterViewInit, OnDestroy {
       const blocks = await this.chain.getBlocks(this.chainInfo.height - 25, this.chainInfo.height - 1)
       blocks['headers'] = blocks['headers'].reverse()
       // @ts-ignore
-      if (this.blocks === undefined || blocks['headers'][0]['hash'] !== this.blocks['headers'][0]['hash']) {
+      if (this.blocks === undefined || (blocks['headers'] && this.blocks['headers'] && blocks['headers'][0]['hash'] !== this.blocks['headers'][0]['hash'])) {
         this.blocks = blocks['headers']
-        console.log(this.blocks)
       }
     }
   }

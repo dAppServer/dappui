@@ -17,13 +17,12 @@ export class AppComponent {
 
   serverStatus: boolean = false;
   constructor() {
-    console.log('AppComponent.constructor');
     this.checkServer()
   }
 
   checkServer() {
-    fetch('http://localhost:36911/api/v1/system/check').then((res) => {
-      this.serverStatus = true
+    fetch('http://localhost:36911/system/check').then((res) => {
+      this.serverStatus = res.ok
     }).catch((err) => {
       this.serverStatus = false
     })
