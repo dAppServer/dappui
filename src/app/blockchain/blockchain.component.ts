@@ -1,12 +1,11 @@
 import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
-import {RouterLink} from "@angular/router";
-import {DecimalPipe, NgForOf, NgIf} from "@angular/common";
+import {Router, RouterLink} from "@angular/router";
+import {DecimalPipe, NgForOf, NgIf, NgStyle} from "@angular/common";
 import {BlockchainService} from "./blockchain.service";
 import {ChainGetInfo} from "./interfaces/props/get_info";
 import {BlockHeader} from "./interfaces/types/blockHeader";
-import {interval,isObservable} from "rxjs";
-
-
+import {interval} from "rxjs";
+import {WebsocketService} from "../../services/websocket.service";
 @Component({
   selector: 'app-blockchain',
   standalone: true,
@@ -15,8 +14,9 @@ import {interval,isObservable} from "rxjs";
     NgIf,
     DecimalPipe,
     NgForOf,
+    NgStyle
   ],
-  providers: [BlockchainService],
+  providers: [BlockchainService, Router],
   templateUrl: './blockchain.component.html',
   styleUrl: './blockchain.component.scss'
 })
@@ -28,8 +28,22 @@ export class BlockchainComponent implements OnInit, AfterViewInit, OnDestroy {
   blocks!: BlockHeader[];
 
   blockSub: any = undefined
-
-  constructor(private chain: BlockchainService) {
+  downloadStats: {
+    file: string,
+    dir: string,
+    fullPath: string,
+    size: number,
+    total: number,
+    percent: number
+  } = {
+    file: '',
+    dir: '',
+    fullPath: '',
+    size: 0,
+    total: 0,
+    percent: 0
+  }
+  constructor(private chain: BlockchainService, private ws: WebsocketService, private router: Router) {
   }
 
   ngOnDestroy(): void {
@@ -59,7 +73,36 @@ export class BlockchainComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async installDaemon() {
+    if(this.downloadStats.total > 0){ return true }
+    this.downloadProgress()
     await this.chain.installDaemon();
+    console.log('Daemon installed');
+    return true;
+
+  }
+
+  downloadProgress(){
+    let that = this;
+    const subject = this.ws.connect().subscribe((data) => {
+      try{
+        that.downloadStats = JSON.parse(atob(data[1]));
+        that.downloadStats.percent = Math.floor((that.downloadStats.total / that.downloadStats.size) * 100)
+        if(this.downloadStats.total == this.downloadStats.size){
+          subject.unsubscribe();
+          console.log('Download complete')
+          setTimeout(() => {
+            that.router.navigate(['/','blockchain'])
+          }, 1000);
+
+        }
+      }catch (e){
+
+      }
+
+
+    })
+    this.ws.sendMessage('daemon:download')
+
   }
 
   async getChainInfo() {

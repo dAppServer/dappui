@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {NgIf} from "@angular/common";
+import {NgClass, NgIf} from "@angular/common";
+import {SocketIoModule} from "ngx-socket-io";
+import {WebSocketPubService} from "./web-socket-pub.service";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf, NgClass, SocketIoModule],
+  providers: [WebSocketPubService],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -20,10 +23,9 @@ export class AppComponent {
 
   checkServer() {
     fetch('http://localhost:36911/api/v1/system/check').then((res) => {
-      console.log('res',res);
       this.serverStatus = true
     }).catch((err) => {
-      console.log('e',err);
+      this.serverStatus = false
     })
   }
 }
