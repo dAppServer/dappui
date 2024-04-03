@@ -6,6 +6,7 @@ import {ChainGetInfo} from "./interfaces/props/get_info";
 import {BlockHeader} from "./interfaces/types/blockHeader";
 import {interval} from "rxjs";
 import {WebsocketService} from "../../services/websocket.service";
+import {TerminalComponent} from "../../services/terminal/terminal.component";
 @Component({
   selector: 'app-blockchain',
   standalone: true,
@@ -14,7 +15,8 @@ import {WebsocketService} from "../../services/websocket.service";
     NgIf,
     DecimalPipe,
     NgForOf,
-    NgStyle
+    NgStyle,
+    TerminalComponent
   ],
   providers: [BlockchainService, Router],
   templateUrl: './blockchain.component.html',
