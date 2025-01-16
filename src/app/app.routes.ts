@@ -4,7 +4,6 @@ import {VpnComponent} from "./vpn/vpn.component";
 import {WalletComponent} from "./wallet/wallet.component";
 import {BlockchainComponent} from "./blockchain/blockchain.component";
 import {SettingsComponent} from "./settings/settings.component";
-import {ReportsComponent} from "./reports/reports.component";
 import {WalletTransactionsComponent} from "./wallet/transactions/wallet-transactions.component";
 import {WalletSendComponent} from "./wallet/send/wallet-send.component";
 import {WalletReceiveComponent} from "./wallet/receive/wallet-receive.component";
@@ -54,15 +53,6 @@ export const routes: Routes = [
     path: 'settings/full-node',
     component: SettingsFullNodeComponent
 
-  },
-  {
-    path: 'settings/docker',
-    component: SettingsDockerComponent
-
-  },
-  {
-    path: 'reports',
-    component: ReportsComponent
   },
   {
     path: '',
