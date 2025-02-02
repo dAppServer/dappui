@@ -18,7 +18,7 @@ export class BlockchainService {
   }
 
   async startDaemon() {
-    const req = await fetch('http://localhost:36911/api/blockchain/lthn/v1/daemon/start', {
+    const req = await fetch('http://localhost:36911/process', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
