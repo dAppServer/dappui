@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ErrorHandler, OnDestroy, OnInit} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {DecimalPipe, NgForOf, NgIf, NgStyle} from "@angular/common";
 import {BlockchainService} from "./blockchain.service";
@@ -7,6 +7,7 @@ import {BlockHeader} from "./interfaces/types/blockHeader";
 import {interval} from "rxjs";
 import {WebsocketService} from "../../services/websocket.service";
 import {TerminalComponent} from "../../services/terminal/terminal.component";
+import {GlobalErrorHandler} from "../app.error";
 @Component({
   selector: 'app-blockchain',
   standalone: true,
@@ -18,7 +19,11 @@ import {TerminalComponent} from "../../services/terminal/terminal.component";
     NgStyle,
     TerminalComponent
   ],
-  providers: [BlockchainService, Router],
+  providers: [ {
+    // processes all errors
+    provide: ErrorHandler,
+    useClass: GlobalErrorHandler,
+  },BlockchainService, Router],
   templateUrl: './blockchain.component.html',
   styleUrl: './blockchain.component.scss'
 })

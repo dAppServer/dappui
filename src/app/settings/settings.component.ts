@@ -13,7 +13,7 @@ import {RouterLink} from "@angular/router";
 export class SettingsComponent implements OnInit{
     ngOnInit(): void {
         console.log('SettingsComponent');
-        throw new Error('Method not implemented.');
+       // throw new Error('Method not implemented.');
     }
 
 }

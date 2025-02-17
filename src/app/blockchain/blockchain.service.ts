@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ChainGetInfo} from "./interfaces/props/get_info";
+import {data} from "autoprefixer";
 
 export const rpcBody = (method: any) => (params: any) => ({
   jsonrpc: '2.0',
@@ -18,46 +19,63 @@ export class BlockchainService {
   }
 
   async startDaemon() {
-    const req = await fetch('http://localhost:36911/process', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({"configFile": "letheand.conf", 'logDir': 'data/log/lthn/letheand.log', "dataDir": "data/lthn"})
-    })
+    try {
+      const req = await fetch('http://localhost:36911/api/blockchain/lthn/v1/daemon/start', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "configFile": "letheand.conf",
+          'logDir': 'data/log/lthn/letheand.log',
+          "dataDir": "data/lthn"
+        })
+      })
+      return req.json();
+    } catch (e) {
+      return false
+    }
 
   }
 
-  isRunning(){
+  isRunning() {
     return this.chainInfo !== undefined && this.chainInfo.status === 'OK'
   }
 
   async daemonInstalled() {
-    const req = await fetch('http://localhost:36911/mod/io/fs/local/list',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          path: 'apps/blockchain/lthn/bin',
-        }),
-      })
+    try {
+      const files = await fetch('http://localhost:36911/mod/io/fs/local/list',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            path: 'apps/blockchain/lthn/bin',
+          }),
+        }).then((data) => {
+        return data.json()
+      }).catch((e) => console.log(e));
 
-    const json = await req.json();
-    return !!json.includes('letheand');
+      return !!files.includes('letheand');
+    } catch (e) {
+
+      return false
+    }
 
   }
 
   async installDaemon() {
-    const req = await fetch('http://localhost:36911/api/blockchain/lthn/v1/daemon/download', {
+    return await fetch('http://localhost:36911/api/blockchain/lthn/v1/daemon/download', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({})
-    })
-    return req.json();
+    }).then((data) => {
+      return data.json()
+    }).catch((e) => console.log(e));
+
   }
 
   async chainRpc(params: any) {
@@ -107,7 +125,7 @@ export class BlockchainService {
    *
    * }
    */
-  async getInfo(): Promise<ChainGetInfo>{
+  async getInfo(): Promise<ChainGetInfo> {
     return this.chainInfo = await this.chainRpc({"method": 'get_info'})
   }
 
